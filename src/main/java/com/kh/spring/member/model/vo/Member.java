@@ -40,7 +40,11 @@ import lombok.ToString;
 @ToString // toString 메서드 자동 생성
 @EqualsAndHashCode // equals, hashcode 자동생성
 */
-@Data // 위의것 전부 포함되어있는 어노테이션
+@Getter // 위의것 전부 포함되어있는 어노테이션
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class Member {
    private int userNo;
