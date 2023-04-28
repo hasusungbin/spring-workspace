@@ -1,5 +1,7 @@
 package com.kh.spring.member.model.service;
 
+import java.util.ArrayList;
+
 import com.kh.spring.member.model.vo.Member;
 
 /*
@@ -16,5 +18,9 @@ import com.kh.spring.member.model.vo.Member;
 public interface MemberService {
 	
 	public abstract Member loginMember(Member inputMember);
+	
+	public abstract int insertMember(Member inputMember);
+	
+	public abstract ArrayList<Member> selectAll();
 	
 }

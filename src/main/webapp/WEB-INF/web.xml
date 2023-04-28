@@ -6,14 +6,24 @@
 	<!-- The definition of the Root Spring Container shared by all Servlets and Filters -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/spring/root-context.xml</param-value>
+		<param-value>
+		/WEB-INF/spring/root-context.xml
+		/WEB-INF/spring/spring-security.xml
+		</param-value>
 	</context-param>
 	
 	<!-- Creates the Spring Container shared by all Servlets and Filters -->
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
-
+	
+	<!-- 
+		DispatcherServlet : 요청(request) / 응답(response)를 나눠주는 서블릿
+		
+		모든 요청을 가장먼저 앞에서 받아들여서 알맞은 controller로 연결을 해주고
+		controller의 반환 결과에 따라서 알맞은 view를 선택해 클라이언트에게 응답하는 역할
+	 -->
+	
 	<!-- Processes application requests -->
 	<servlet>
 		<servlet-name>appServlet</servlet-name>
@@ -61,11 +71,6 @@
 		<filter-name>encodingFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	
-	
-	
-	
-	
 	
 
 </web-app>

@@ -1,20 +1,28 @@
 package com.kh.spring.member.controller;
 
+import java.util.ArrayList;
+
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.gson.Gson;
 import com.kh.spring.member.model.service.MemberService;
 import com.kh.spring.member.model.service.MemberServiceImpl;
 import com.kh.spring.member.model.vo.Member;
@@ -22,8 +30,8 @@ import com.kh.spring.member.model.vo.Member;
 @Controller //생성된 bean이 controller임을 명시 +bean 등록
 @RequestMapping("/member") // localhost:8081/spring/member 이하의 url요청을 처리하는 컨트롤러
 
-//로그인, 회원가입 기능 완료후 실행될 코
-@SessionAttributes({"loginMember"})
+//로그인, 회원가입 기능 완료후 실행될 코드
+@SessionAttributes({"loginUser"})
 
 
 public class MemberController {
@@ -41,15 +49,14 @@ public class MemberController {
 	 * Autowired를 통한 객체 주입방법
 	 * 1. 필드방식 의존성 주입
 	 * 2. 생성자방식 의존성 주입
-	 * 3. setter방식 의존성 주입 
+	 * 3. setter방식 의존성 주입
 	 * 
 	 */
 	
-	
-	
+
 	/*
 	 * 1)필드방식 의존성
-	 * 필드방식 의존성 주입의 장점 : 이해하기 편하다, 사용하기 편하다, 
+	 * 필드방식 의존성 주입의 장점 : 이해하기 편하다, 사용하기 편하다,
 	 * 필드방식 의존성 주입의 단점 : 1)순환의존성 문제가 발생할수있다
 	 * 						  2)무분별한 주입시 의존관계확인이 어렵다
 	 * 
@@ -57,6 +64,8 @@ public class MemberController {
 	
 	//@Autowired //bean으로 등록된 객체중 타입이 같거나, 상속관계인 bean을 자동으로 주입 해주는 역할
 	private MemberService memberService;
+	
+	private BCryptPasswordEncoder bcryptPasswordEncoder;
 	
 	/*
 	 * 2) 생성자 방식 의존성 주입
@@ -89,8 +98,9 @@ public class MemberController {
 	 * 
 	 */
 	@Autowired
-	public void setMemberService(MemberService memberService) {
+	public void setMemberService(MemberService memberService , BCryptPasswordEncoder bcryptPasswordEncoder) {
 		this.memberService = memberService;
+		this.bcryptPasswordEncoder = bcryptPasswordEncoder;
 		
 	}
 	/*
@@ -214,7 +224,7 @@ public class MemberController {
 		//2) modelAndView 객체 이용
 		
 		//ModelAndView에서 model은 데이터를 key-value담을 수있는 Model객체를 의미함
-		//View 응답ㅂ에 대한 정보를 담을수 있다. 이때는 리턴타입이 String이 아닌 modelAndView로 전달해야함
+		//View 응답에 대한 정보를 담을수 있다. 이때는 리턴타입이 String이 아닌 modelAndView로 전달해야함
 		//Model + View가 결합된 형태의 객체 Model 객체는 단독사용이 가능하지만, View는 불가능함.
 		//mv.setViewName("common/errorPage")
 		//return mv;
@@ -222,7 +232,7 @@ public class MemberController {
 	/*
 	 * @RequestMapping? 클라이언트의 요청(url)에 맞는 클래스 or 메서드를 연결시켜주는 어노테이션.
 	 * 					 해당어노테이션이 붙은 클래스 /메소드를 스프링 컨테이너가 HandlerMapping으로 등록해둔다. 
-	 * 		 HandlerMapping? 사용자가 지정한 url정보들을 모아둔 저장소
+	 * 	HandlerMapping? 사용자가 지정한 url정보들을 모아둔 저장소
 	 * 					--> 클래스레벨에서 사용된 경우 : 공통주소로 활용됨(만약 현재 클래스의 공통주소인 member로 요청이 
 	 * 						들어오면 현재 MemberController가 직접 요청처리를 하게 됨
 	 * 					--> 메서드 레벨에서 사요오딘 경우 : 공통주소 외 나머지 주소
@@ -241,30 +251,163 @@ public class MemberController {
 	
 	
 	@PostMapping("/login")
-	public ModelAndView loginMember(ModelAndView mv, 
-									Member m,
-									HttpSession session,
-									RedirectAttributes ra,
-									HttpServletResponse resp,
-									HttpServletRequest req, 
-									@RequestParam(value="saveId", required = false) String saveId) {
+	public String loginMember(Model model, 
+								Member m,
+								HttpSession session,
+								RedirectAttributes ra,
+								HttpServletResponse resp,
+								HttpServletRequest req, 
+								@RequestParam(value="saveId", required = false) String saveId) {
 		
+		// 암호화 전 로그인 요청 처리
+//		Member loginUser = memberService.loginMember(m);
+//		
+//		if(loginUser == null) {
+//			//실패
+//			mv.addObject("errorMsg","로그인실패");
+//			
+//			mv.setViewName("common/errorPage");
+//		}else {
+//			//성공
+//			session.setAttribute("loginUser", loginUser);
+//			mv.setViewName("redirect:/"); //메인페이지로 url 재요청
+//			//response.sendRedirect(request.getContextPath());
+//			
+//		}
+		
+		// 암호화 후
+		/*
+		 * 기존에 평문이 db에 등록되어 있기 때문에 아이디랑 비밀번호를 같이 입력받아 조회하는 형태로 작업했음.
+		 * 암호화 작업을 하면 입력받은 비밀번호는 평문이지만, 디비에 등록된 비밀번호는 암호문이기 때문에 비교시 무조건 다르게 나옴
+		 * 아이디로 먼저 회원정보 조회 후 회원이 있으면 비밀번호 암호문 비교 메소드를 이용해서 일치하는지 확인.
+		 */
 		Member loginUser = memberService.loginMember(m);
+		// loginUser : 아이디 + 비밀번호로 조회한 회원정보 ---> 아이디로만 조회하도록
+		// loginUser안의 userPwd : 암호화된 비밀번호
+		// m안의 userPwd : 암호화 되지않은 평문 비밀번호.
 		
-		if(loginUser == null) {
-			//실패
-			mv.addObject("errorMsg","로그인실패");
+		// BCryptPasswordEncoder객체의 매소드중 matches라는 메소드 사용
+		// matches(평문 , 암호문) 을 작성하면 내부적으로 복호화 작업이 이루어져서 일치여부를 boolean값으로 반환함.(true면 일치, false면 불일치)
+		
+		if(loginUser != null && bcryptPasswordEncoder.matches(m.getUserPwd(), loginUser.getUserPwd()) ) {
+			// 두 조건 모두 만족 시 로그인 성공
+			// mv.addObject("loginUser" , loginUser); // ModelAndView 로 추가 시 에러 발생.
+			model.addAttribute("loginUser" , loginUser);
+//			session.setAttribute("loginUser", loginUser);
 			
-			mv.setViewName("common/errorPage");
-		}else {
-			//성공
-			session.setAttribute("loginUser", loginUser);
-			mv.setViewName("redirect:/"); //메인페이지로 url 재요청
-			//response.sendRedirect(request.getContextPath());
-					
+			session.setAttribute("alertMsg","로그인 성공");
+			
+			// 로그인 성공 시 아이디값을 저장하고 있는 쿠키 생성(유효시간 1년)
+			
+			Cookie cookie = new Cookie("saveId" , loginUser.getUserId());
+			
+			if(saveId != null) { // 아이디 저장이 체크 되었을 때
+				cookie.setMaxAge(60 * 60 * 24 * 365); // 초단위 지정(1년) 초 분 시 일 
+			} else { // 아이디 저장 체크하지 않았을 때
+				cookie.setMaxAge(0); // 유효시간 0초 -> 생성되자마자 소멸
+			}
+			
+			// 쿠키를 응답 시 클라이언트한테 전달
+			resp.addCookie(cookie);
+			
+			// mv.setViewName("redirect:/");
+			return "redirect:/";
+			
+		} else {
+			// 로그인 실패 시
+			ra.addFlashAttribute("errorMsg","아이디 또는 비밀번호가 일치하지 않습니다.");
+			// redirect의 특징 -> request에 데이터를 저장할 수 없다.
+			// redirect시 잠깐 데이터를 sessionScope에 보관
+			// redirect완료 후 다시 requestScope 이관. ==> 페이지 재요청시에도 request스코프에 데이터를 유지 가능.
+			// : redirect(페이지 재요청)시에도 request scope로 세팅된 데이터가 유지될 수 있도록 하는 방법을 spring에서 제공해 준다.
+			// RedirectAttribute객체(컨트롤러의 매개변수로 작성하면 Argument Resolver가 넣어줌)
+			
+//			mv.setViewName("redirect:/");
+			return "redirect:/";
 		}
-		return mv;
 		
 	}
 	
+	@GetMapping("/insert") // spring/member/insert
+	public String enrollForm() {
+		return "member/memberEnrollForm";
+	}
+	/*
+	 * 1. memberService 호출해서 insertMember 메소드 실행 => db에 새 회원정보 등록
+	 * 
+	 * 2. 멤버테이블에 회원가입 등록 성공 했다면 alertMsg <-- 회원가입 성공 메세지 보내기 (세션)
+	 * 	  멤버테이블에 회원등록 실패 했다면, 에러페이지로 메시지 담아서 보내기 <-- 회원가입 실패메시지(리퀘스트)
+	 */
+	@PostMapping("/insert")
+	public String insertMember(Member m, HttpSession session, Model model) {
+		
+		System.out.println("암호화 전 비밀번호 : "+m.getUserPwd());
+		
+		// 암호화 작업
+		String encPwd = bcryptPasswordEncoder.encode(m.getUserPwd());
+		
+		// 암호화 된 pwd를 m의 userPwd 다시 대입.
+		
+		m.setUserPwd(encPwd);
+		
+		System.out.println("암호화 후 비밀번호 : "+m.getUserPwd());
+		
+		// 1. memberService 호출해서 insertMember 메소드 실행 후 db에 회원객체 등록
+		int result = memberService.insertMember(m);
+		
+		/*
+		 * 2. 멤버테이블에 회원가입 등록 성공했다면 alertMsg(session)
+		 * 						실패했다면 errorMsg(request)
+		 */
+		String url = "";
+		if(result > 0) { // 성공 시 - 메인페이지로
+			session.setAttribute("alertMsg", "회원가입 성공");
+			url = "redirect:/";
+		} else { // 실패 시 에러페이지로
+			model.addAttribute("errorMsg" , "회원가입 실패");
+			url = "common/errorPage";
+		}
+		
+		return url;
+	}
+	
+	@GetMapping("/logout")
+	public String logoutMember(HttpSession session ,
+								SessionStatus status) {
+		
+		// 로그아웃 기능 ? session 안에 저장된 login 정보를 날리는게 곧 로그아웃.
+		// @SessionAttribute를 이용해서 session scope에 배치된 데이터는 일반적인 방법으로는 없앨 수 없음.
+		// SessionStatus 라는 별도의 객체를 이용해야만 없앨 수 있다.
+		
+		// session.invalidate(); 기존 세션 방식으로는 안된다.
+		status.setComplete(); // 세션이 할 일을 완료함. -> 없앤다.
+		
+		return "redirect:/";
+	}
+	
+	@ResponseBody // 반환되는 값이 forward/redirect 경로가 아닌 값 그 자체임을 의미(ajax시 사용)
+	@PostMapping("/selectOne")
+	public String selectOne(String input) {
+		
+		Member m = new Member();
+		m.setUserId(input);
+		
+		Member searchMember = memberService.loginMember(m);
+		
+		// JSON : 자바스크립트 객체 표기법으로 작성된 문자열 형태의 객체.
+		
+		// GSON 라이브러리 : JSON을 보다 쉽게 다루기 위한 google에서 배포한 라이브러리.
+		
+		return new Gson().toJson(searchMember);
+	}
+	
+	@ResponseBody
+	@PostMapping("/selectAll")
+	public String selectAll() {
+		
+		ArrayList<Member> list = memberService.selectAll();
+		
+		return new Gson().toJson(list);
+		
+	}
 }
