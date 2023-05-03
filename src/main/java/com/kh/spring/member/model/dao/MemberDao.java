@@ -9,21 +9,27 @@ import org.springframework.stereotype.Repository;
 
 import com.kh.spring.member.model.vo.Member;
 
-@Repository // bean으로 등록하는 어노테이션.
+@Repository
 public class MemberDao {
 	
 	@Autowired
 	private SqlSessionTemplate sqlSession;
 	
 	public Member loginMember(Member inputMember) {
-		return sqlSession.selectOne("memberMapper.loginMember" , inputMember);
+		return sqlSession.selectOne("memberMapper.loginMember", inputMember);
 	}
 	
 	public int insertMember(Member inputMember) {
-		return sqlSession.insert("memberMapper.insertMember", inputMember);
+		return sqlSession.insert("memberMapper.insertMember",inputMember);
 	}
 	
-	public ArrayList<Member> selectAll() {
+	public ArrayList<Member> selectAll(){
 		return (ArrayList)sqlSession.selectList("memberMapper.selectAll");
 	}
+	
+	
+	
+	
+	
+	
 }

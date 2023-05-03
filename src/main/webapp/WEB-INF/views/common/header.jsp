@@ -48,9 +48,6 @@ div {box-sizing:border-box;}
 }
 </style>
 </head>
-
-
-
 <body>
 
 	<c:if test="${ not empty alertMsg }">
@@ -64,7 +61,7 @@ div {box-sizing:border-box;}
 	<div class="header">
 <!-- 		<div id="header_1"> -->
 			<div id="header_1_left">
-			 <a href="<%=  request.getContextPath() %>">
+			 <a href="<%= request.getContextPath()%>">
 		  		<%--
 		  		
 		  		header.jsp파일처럼 를 별도의 jsp로 분리한 경우 , header.jsp를 포함(include)하고 있는 다른 jsp페이지에서 상대경로로 작성된 이미지의 경로가 일치하지 않는 문제가 발생할수 있음.
@@ -108,10 +105,11 @@ div {box-sizing:border-box;}
        				<c:if test="${ empty sessionScope.loginUser}"> 
             			<a data-toggle="modal" data-target="#loginModal">로그인</a>
             			<span>|</span>
-            			<a href="<%=  request.getContextPath() %>/member/insert">회원가입</a>
+            			<a href="<%= request.getContextPath()%>/member/insert">회원가입</a>
             			<span>|</span>
 	                    <a href="#">ID/PW 찾기</a>
             			<!-- 회원가입 / ID/PW 찾기 영역 -->
+
             		</c:if>
             		
 			</div>			
@@ -124,12 +122,12 @@ div {box-sizing:border-box;}
 	    <ul>
 	    	<li><a href="#">HOME</a></li>
 	    	<li><a href="#">공지사항</a></li>
-	    	<li><a href="<%=  request.getContextPath() %>/chat/chatRoomList">채팅</a></li>
-	       <%--  <li><a href="${contextPath}/board/list?type=1">공지사항</a></li>
-	        <li><a href="${contextPath}/board/list?type=2">자유 게시판</a></li>
-	        <li><a href="${contextPath}/board/list?type=3">질문 게시판</a></li> --%>	
+	    	<li><a href="<%= request.getContextPath()%>/chat/chatRoomList">채팅</a></li>
+	       <%--  <li><a href="<%= request.getContextPath()%>/board/list?type=1">공지사항</a></li>
+	        <li><a href="<%= request.getContextPath()%>/board/list?type=2">자유 게시판</a></li>
+	        <li><a href="<%= request.getContextPath()%>/board/list?type=3">질문 게시판</a></li> --%>	
 			<c:forEach var="boardType" items="${boardTypeList}">
-				<li><a href="<%=  request.getContextPath() %>/board/list/${boardType.boardCd}">${boardType.boardName}</a></li>
+				<li><a href="<%= request.getContextPath()%>/board/list/${boardType.boardCd}">${boardType.boardName}</a></li>
 			</c:forEach>
 	    </ul>
 	</div>
@@ -146,7 +144,7 @@ div {box-sizing:border-box;}
 					<h4 class="modal-title">Login</h4>
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
 				</div>
-				<form action="<%=  request.getContextPath() %>/member/login" method="post">
+				<form action="<%= request.getContextPath()%>/member/login" method="post">
 					<!--  모달 바디 -->
 					<div class="modal-body">
 						<input type="text" class="form-controll mb-2 mr-sm-2" placeholder="Enter ID" id="userId" name="userId" value="${cookie.saveId.value}" style="width:100%"> <br>

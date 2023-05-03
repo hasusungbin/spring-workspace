@@ -7,10 +7,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KH 커뮤니티</title>
-   
-   <!-- 메인페이지에 적용할 css 템플릿 추가  -->
+	
+	<!-- 메인페이지에 적용할 css 템플릿 추가  -->
     <link rel="stylesheet" href="resources/css/main-style.css">
-   <!-- fontawesome라이브러리추가 다양한 아이콘을 지원함.(EX) 검색용 돋보기 버튼) -->
+	<!-- fontawesome라이브러리추가 다양한 아이콘을 지원함.(EX) 검색용 돋보기 버튼) -->
     <script src="https://kit.fontawesome.com/a2e8ca0ae3.js" crossorigin="anonymous"></script>
 
 </head>
@@ -18,15 +18,15 @@
     <div class="main">
         
         <!--
-              * 경로 작성 시 최상위경로인 : /webapp  == / 에서부터 실제 파일이 존재하는 위치대로 작성
+           	* 경로 작성 시 최상위경로인 : /webapp  == / 에서부터 실제 파일이 존재하는 위치대로 작성
         -->
         <!-- 내부 접근 절대 경로 -->
         <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
 
         <div class="content">
-              <!-- 사이트에 유용한 기능을 추가하는 영역 직접 해보기!! -->
-              <div class="content-1">
+           	<!-- 사이트에 유용한 기능을 추가하는 영역 직접 해보기!! -->
+           	<div class="content-1">
                <h3>회원 정보 조회</h3>
 
                <p>이메일을 입력 받아 일치하는 회원 정보를 출력</p>
@@ -76,13 +76,13 @@
                </div>
                <div class="content-2">
                <%-- 로그인이 되어있는 경우 d
-                      회원가입 기능 수정후 다시오자.
-                   --%>
-                <c:if test="${ !empty sessionScope.loginUser}"> 
-                    
-                    <div class="login-area">
-                           <!-- 회원 프로필 이미지 -->
-                       <a href="<%=  request.getContextPath() %>/member/myPage/profile">
+            			 회원가입 기능 수정후 다시오자.
+            		 --%>
+       			<c:if test="${ !empty sessionScope.loginUser}"> 
+           			
+           			<div class="login-area">
+                        <!-- 회원 프로필 이미지 -->
+           				<a href="<%=  request.getContextPath() %>/member/myPage/profile">
                                
                                <c:if test="${empty loginUser.profileImage}">
                                    <img src="<%=  request.getContextPath() %>/resources/images/user.jpg" id="member-profile">
@@ -92,25 +92,25 @@
                                    <img src="<%=  request.getContextPath() %>${loginUser.profileImage}" id="member-profile">
                                </c:if>
 
-                       </a>
+           				</a>
 
                            <!-- 회원 정보 + 로그아웃 버튼 -->                                       
                            <div class="my-info">
                                <div>
-<%--                                <a href="<%=  request.getContextPath() %>/member/myPage/info" id="nickname">루피</a> --%>
-                                   <a href="${context.Path }/member/myPage/info" id="nickname">${empty loginUser.nickName ? '루피':loginUser.nickName}</a>
+<%--                                <a href="${contextPath}/member/myPage/info" id="nickname">루피</a> --%>
+                                   <a href="${contextPath }/member/myPage/info" id="nickname">${empty loginUser.nickName ? '루피':loginUser.nickName}</a>
 
                                    <a href="<%=  request.getContextPath() %>/member/logout" id="logout-btn">로그아웃</a>
                                </div>
 
                                <p>
-                                  <!-- alsrudals2022@naver.com -->
+                               	<!-- alsrudals2022@naver.com -->
                                    ${empty loginUser.userId ? 'alsrudals93@naver.com':loginUser.userId}
                                </p>
                            </div>
-                    </div>
-                 
-                 </c:if>
+           			</div>
+           		
+           		</c:if>
                </div>
         </div>
 
@@ -122,8 +122,8 @@
     <!-- jQuery 라이브러리 추가 -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
    
-   	<!-- main.js 연결 -->
-   	<script src="${contextPath}/resources/js/main/main.js"></script>
-
+	<!-- main.js 연 결 -->
+	<script src="${contextPath}/resources/js/main/main.js"></script>
+	
 </body>
 </html>
