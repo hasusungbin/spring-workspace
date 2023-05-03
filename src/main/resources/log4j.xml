@@ -40,6 +40,36 @@
 		</layout>
 	</appender>
 	
+	<!-- 
+		DailyRollingFileAppender : 일정기간 단위로 로그파일을 생성하고 기록하도록 도와주는 클래스.
+	 -->
+	<appender name="dailyLog" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="threshold" value="INFO" />
+		<!-- logger안에 appender-ref dailyLog객체를 사용 시 level정보가 없다면 threshold설정한 정보를 사용하겠다 라는 의미. -->
+		<param name="Append" value="true" />
+		<!-- 파일 이어쓰기 여부 true가 이어쓰기 , false는 새로 생성 -->
+		<param name="File" value="C:\\spring-workspace\\spring_log\\kh.log" />
+		<!-- 폴더에 접근권한이 없는 경우 에러발생 할 수 있음. -->
+		<param name="DatePattern" value="'.'yyyyMMdd" />
+		<!-- 
+			현재 만든 DatePattern은 매일 자정에 로그파일을 바꿔주는 명령어.
+			
+			yyyyMM : 로그파일을 매달 바꿔주는 명령어
+			yyyyww : 매주
+			yyyyMMdd : 매일 자정 -> 보통은 매일 자정으로 설정함.
+			yyyyMMdd a : 자정과 정오에 로그파일을 바꿔주는 명령어.
+			
+			그 외 매시간, 매분마다도 가능함.
+		 -->
+		 <layout class="org.apache.log4j.PatternLayout">
+		 	<param name="ConversionPattern" value="[%d{HH:mms:ss.SSS}] - %m%n" />
+		 </layout>
+	</appender>
+	
+	<logger name="com.kh.spring.common.interceptor.LoggingInterceptor">
+		<appender-ref ref="dailyLog" />
+	</logger>
+	
 	<!-- SQL 로그 출력용 패턴 지정 -->
 	<appender name="sql-console" class="org.apache.log4j.ConsoleAppender">
 		<param name="Target" value="System.out"/>

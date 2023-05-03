@@ -54,7 +54,9 @@ public class BoardController {
 		Map<String, Object> map = new HashMap();
 		// 게시글 목록 조회 서비스 호출시 작업 내용
 		// 1) 게시판 이름 조회
-
+		/*
+		 * if(true) { throw new RuntimeException(); } // 강제 예외처리 발생.
+		 */
 		// 검색요청을하지 않은경우
 		if (paramMap.get("condition") == null) {
 			boardService.selectBoardList(currentPage, boardCode, map);
