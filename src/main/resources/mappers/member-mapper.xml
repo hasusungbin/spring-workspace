@@ -53,7 +53,11 @@
 		WHERE STATUS='Y'
 	</select>
 
-
+	<update id="updateMemberChangePwd">
+		UPDATE MEMBER
+		SET CHANGE_PWD = 'Y'
+		<![CDATA[WHERE ADD_MONTHS(MODIFY_DATE , 3) < SYSDATE]]> <!-- [CDATA] -> < , > 부등호기호를 문자열로 인식하지 못하게 -->
+	</update>
 
 
 

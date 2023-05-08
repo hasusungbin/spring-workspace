@@ -222,7 +222,9 @@ public class BoardServiceImpl implements BoardService {
 		
 	}
 	
-	
+	public ArrayList<BoardImg> selectAll() {
+		return boardDao.selectAll();
+	}
 	
 	
 	
