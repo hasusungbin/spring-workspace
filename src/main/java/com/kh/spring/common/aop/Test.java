@@ -40,6 +40,8 @@ public class Test {
 		logger.info("========================== Service Start =====================================================================");
 	}
 	
+	//@After : PointCut 에 지정된 메소드가 수행된 후 , advice수행을 하라고 지시하는 어노테이션.
+	
 	@After("execution(* com.kh.spring.board..*Impl*.*(..))")
 	public void end() {
 		logger.info("========================== Service End =====================================================================");
