@@ -59,7 +59,7 @@
  	 	<!-- 
  	 		Scheduler
  	 		위에서 정의한 job과 trigger를 관리하고 , 정의해둔 트리거를 실행시키는 녀석
- 	 	 --> 	 	 
+ 	 	 -->	 
  	 </bean>
  	 
  	 <bean id="jobTrigger2" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
