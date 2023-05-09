@@ -137,12 +137,21 @@
 								console.log(result);
 								let html ="";
 								for(let reply of result){
-								html += "<tr>"
-										   +"<td>"+reply.replyWriter +"</td>"
-										   +"<td>"+reply.replyContent +"</td>"
-										   +"<td>"+reply.createDate +"</td>"
-								   +  "</tr>";
-								}
+			                           html += "<tr>";
+			                           html += "<td>"+reply.replyWriter +"</td>";
+			                           if(reply.userNo == '${loginUser.userNo}'){
+			                              html += "<td><textarea id='replyContent"+reply.replyNo+"'>"+reply.replyContent +"</textarea></td>";
+			                           }else{
+			                              html += "<td>"+reply.replyContent +"</td>";
+			                           }
+			                           html += "<td>"+reply.createDate +"</td>";
+			                           if(reply.userNo == '${loginUser.userNo}'){
+			                              html += "<td><button onclick='updateReply("+reply.replyNo+");'>수정</button>"+
+			                              "<button onclick='deleteReply("+reply.replyNo+")'>삭제</button>"
+			                              +"</td>";
+			                           }                                 
+			                           html += "</tr>";
+			                        }
 								$("#replyArea tbody").html(html);
 								$("#rcount").html(result.length);
 							},error : function(req,sts,err){
@@ -177,6 +186,40 @@
 							
 						})
 						
+					}
+					
+					function deleteReply(replyNo){
+						$.ajax({
+							url : "${contextPath}/reply/delete" ,
+							data : {replyNo}, // replyNo : replyNo 같아서 생략가능 
+							success : function(result){
+								if(result == 1) {
+									alert("삭제 성공");
+								} else {
+									alert("삭제 실패");
+								}
+								selectReplyList();
+							}
+						})
+					}
+					
+					function updateReply(replyNo) {
+						$.ajax({
+							url : "${contextPath}/reply/update",
+							data : {
+								replyNo,
+								replyContent : $("#replyContent" + replyNo).val()
+							},
+							type : 'POST' ,
+							success : function(result) {
+								if(result == 1) {
+									alert("댓글 수정 성공");
+								} else {
+									alert("댓글 수정 실패");
+								}
+								selectReplyList();
+							}
+						})
 					}
 					
 				</script>

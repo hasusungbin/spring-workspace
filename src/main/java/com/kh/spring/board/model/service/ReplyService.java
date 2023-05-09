@@ -10,8 +10,8 @@ public interface ReplyService {
 	int insertReply(Reply reply);
 	// 댓글 목록 조회
 	List<Reply> selectReplyList(int bno);
-	// 댓글 수정
-	
 	// 댓글 삭제
-	
+	int deleteReply(int replyNo);
+	// 댓글 수정
+	int updateReply(Reply reply);
 }
