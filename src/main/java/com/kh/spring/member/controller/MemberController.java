@@ -148,7 +148,7 @@ public class MemberController extends QuartzJobBean{
 	/*
 	 * 3. @RequestParam 어노테이션을 생략하는 방법
 	 * 단, 매개변수명을 jsp의 name속성값(요청시 전달한 키값)과 동일하게 작성해줘야한다.
-	 * 또한, 위에서 작성했떤 나머지 속성들 사용 불가
+	 * 또한, 위에서 작성했던 나머지 속성들 사용 불가
 	 */
 //	@RequestMapping("/login")
 //	public String loginMember(String userId, String userPwd) {

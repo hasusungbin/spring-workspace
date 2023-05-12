@@ -24,7 +24,7 @@
 		
 	</typeAliases>
 	
-	<!-- 
+	<!--
 		enviroments , datasource에 기술했던 db연결정보는 별도로 기술할 예정(root-context.xml에 작성)
 		-> root-context.xml(db등록은 서버연동과 동시에 이루어져야하기때문에 서버연결과 동시에 읽혀지는
 		root-context.xml에 기술하는것임)
